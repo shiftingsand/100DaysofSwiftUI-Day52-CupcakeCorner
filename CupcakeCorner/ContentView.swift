@@ -9,30 +9,44 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var username = ""
-    @State private var email = ""
-    var disableButton : Bool {
-        if username.count > 5 && email.count > 5 {
-            return false
-        } else {
-            return true
-        }
-    }
-    let decide = false
+    @ObservedObject var order = Order()
     
     var body: some View {
-        Form {
-            Section {
-                TextField("Username", text: $username)
-                TextField("Email", text: $email)
-            }
-            
-            Section {
-                Button("Create account") {
-                    print("Creating account")
+        NavigationView {
+            Form {
+                Section {
+                    Picker("Select your cake type", selection: $order.type) {
+                        ForEach(0..<Order.types.count, id:\.self) { nummy in
+                            Text("\(Order.types[nummy])")
+                        }
+                    }
+                    
+                    Stepper(value: $order.quantity, in: 3...20) {
+                        Text("Number of cupcakes \(order.quantity)")
+                    }
                 }
-                .disabled(disableButton)
+                
+                Section {
+                    Toggle(isOn: $order.specialRequestEnabled.animation()) {
+                        Text("Any special requests?")
+                    }
+                    
+                    if order.specialRequestEnabled {
+                        Toggle(isOn: $order.extraFrosting) {
+                            Text("Add extra frosting")
+                        }
+                        
+                        Toggle(isOn: $order.extraSprinkles) {
+                            Text("Add extra sprinkles")
+                        }
+                    }
+                }
+                
+                Section {
+                    NavigationLink("Enter address", destination: AddressView(order: order))
+                }
             }
+            .navigationBarTitle("Cupcake Corner")
         }
     }
 }
