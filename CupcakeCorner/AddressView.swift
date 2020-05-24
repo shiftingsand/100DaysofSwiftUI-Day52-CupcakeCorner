@@ -12,7 +12,20 @@ struct AddressView: View {
     @ObservedObject var order : Order
     
     var body: some View {
-        Text("AddressView!")
+        Form {
+            Section {
+                TextField("Name", text: $order.name)
+                TextField("Street Address", text: $order.streetAddress)
+                TextField("City", text: $order.city)
+                TextField("Zip Code", text: $order.zip)
+            }
+            
+            Section {
+                NavigationLink("Check out", destination: CheckoutView(order: order))
+            }
+            .disabled(order.hasValidAdddress == false)
+        }
+        .navigationBarTitle("Delivery Details", displayMode: .inline)
     }
 }
 
