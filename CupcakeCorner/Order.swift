@@ -51,7 +51,11 @@ class Order : ObservableObject, Codable {
     }
     
     var hasValidAdddress : Bool {
-        if name.isEmpty || streetAddress.isEmpty || city.isEmpty || zip.isEmpty {
+        // day 52 - challenge 1
+        if name.trimmingCharacters(in: .whitespaces).isEmpty ||
+            streetAddress.trimmingCharacters(in: .whitespaces).isEmpty ||
+            city.trimmingCharacters(in: .whitespaces).isEmpty ||
+            zip.trimmingCharacters(in: .whitespaces).isEmpty {
             return false
         } else {
             return true
