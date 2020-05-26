@@ -12,6 +12,7 @@ struct CheckoutView: View {
     @ObservedObject var order = Order()
     @State private var confirmationMessage = ""
     @State private var showingAlert = false
+    @State private var showingInetAlert = false
     
     var body: some View {
         GeometryReader { geo in
@@ -29,6 +30,10 @@ struct CheckoutView: View {
                         self.placeOrder()
                     }
                     .padding()
+                        // day 52 - challenge 2
+                    .alert(isPresented: self.$showingInetAlert) {
+                        Alert(title: Text("Problem!"), message: Text("There was a problem submitting your order. Please try again later."), dismissButton: .default(Text("OK")))
+                    }
                 }
             }
             .navigationBarTitle("Check Out", displayMode: .inline)
@@ -39,12 +44,16 @@ struct CheckoutView: View {
     }
     
     func placeOrder () {
+        let goodURL = "https://reqres.in/api/cupcakes"
+        let badURL = "https://www.yahoo.com"
         guard let encoded = try? JSONEncoder().encode(order) else {
             print("failed to encode order")
             return
         }
         
-        let url = URL(string: "https://reqres.in/api/cupcakes")!
+        // day 52 - challenge 2
+        // simulating network problem
+        let url = URL(string: 3 == order.quantity ? badURL : goodURL)!
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
@@ -53,6 +62,7 @@ struct CheckoutView: View {
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data else {
                 print("No data in response \(error?.localizedDescription ?? "Unknown error")")
+                self.showingInetAlert = true
                 return
             }
             
@@ -61,6 +71,7 @@ struct CheckoutView: View {
                 self.showingAlert = true
             } else {
                 print("Invalid response from server")
+                self.showingInetAlert = true
             }
         }.resume()
     }
