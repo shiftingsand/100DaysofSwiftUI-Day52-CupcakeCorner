@@ -9,41 +9,42 @@
 import SwiftUI
 
 struct ContentView: View {
-    @ObservedObject var order = Order()
+    //@ObservedObject var order = Order()
+    @ObservedObject var classyOrder = ClassyOrder()
     
     var body: some View {
         NavigationView {
             Form {
                 Section {
-                    Picker("Select your cake type", selection: $order.type) {
+                    Picker("Select your cake type", selection: $classyOrder.order.type) {
                         ForEach(0..<Order.types.count, id:\.self) { nummy in
                             Text("\(Order.types[nummy])")
                         }
                     }
                     
-                    Stepper(value: $order.quantity, in: 3...20) {
-                        Text("Number of cupcakes \(order.quantity)")
+                    Stepper(value: $classyOrder.order.quantity, in: 3...20) {
+                        Text("Number of cupcakes \(classyOrder.order.quantity)")
                     }
                 }
                 
                 Section {
-                    Toggle(isOn: $order.specialRequestEnabled.animation()) {
+                    Toggle(isOn: $classyOrder.order.specialRequestEnabled.animation()) {
                         Text("Any special requests?")
                     }
                     
-                    if order.specialRequestEnabled {
-                        Toggle(isOn: $order.extraFrosting) {
+                    if classyOrder.order.specialRequestEnabled {
+                        Toggle(isOn: $classyOrder.order.extraFrosting) {
                             Text("Add extra frosting")
                         }
                         
-                        Toggle(isOn: $order.extraSprinkles) {
+                        Toggle(isOn: $classyOrder.order.extraSprinkles) {
                             Text("Add extra sprinkles")
                         }
                     }
                 }
                 
                 Section {
-                    NavigationLink("Enter address", destination: AddressView(order: order))
+                    NavigationLink("Enter address", destination: AddressView(classyOrder: classyOrder))
                 }
             }
             .navigationBarTitle("Cupcake Corner")

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct CheckoutView: View {
-    @ObservedObject var order = Order()
+    @ObservedObject var classyOrder : ClassyOrder
     @State private var confirmationMessage = ""
     @State private var showingAlert = false
     @State private var showingInetAlert = false
@@ -23,7 +23,7 @@ struct CheckoutView: View {
                         .scaledToFit()
                         .frame(width: geo.size.width)
                     
-                    Text("Your total is \(self.order.cost, specifier: "%.2f")")
+                    Text("Your total is \(self.classyOrder.order.cost, specifier: "%.2f")")
                         .font(.title)
                     
                     Button("Place order") {
@@ -31,8 +31,8 @@ struct CheckoutView: View {
                     }
                     .padding()
                         // day 52 - challenge 2
-                    .alert(isPresented: self.$showingInetAlert) {
-                        Alert(title: Text("Problem!"), message: Text("There was a problem submitting your order. Please try again later."), dismissButton: .default(Text("OK")))
+                        .alert(isPresented: self.$showingInetAlert) {
+                            Alert(title: Text("Problem!"), message: Text("There was a problem submitting your order. Please try again later."), dismissButton: .default(Text("OK")))
                     }
                 }
             }
@@ -46,14 +46,14 @@ struct CheckoutView: View {
     func placeOrder () {
         let goodURL = "https://reqres.in/api/cupcakes"
         let badURL = "https://www.yahoo.com"
-        guard let encoded = try? JSONEncoder().encode(order) else {
+        guard let encoded = try? JSONEncoder().encode(classyOrder.order) else {
             print("failed to encode order")
             return
         }
         
         // day 52 - challenge 2
         // simulating network problem
-        let url = URL(string: 3 == order.quantity ? badURL : goodURL)!
+        let url = URL(string: goodURL)!
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
@@ -79,6 +79,6 @@ struct CheckoutView: View {
 
 struct CheckoutView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutView(order: Order())
+        CheckoutView(classyOrder: ClassyOrder())
     }
 }
